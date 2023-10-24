@@ -1,0 +1,3 @@
+Produto 0: Quantidade vendida: 2   Valor: R$2.00
+Produto 1: Quantidade vendida: 4   Valor: R$4.00
+Produto 2: Quantidade vendida: 5   Valor: R$5.00
