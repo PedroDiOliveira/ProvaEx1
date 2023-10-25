@@ -52,9 +52,9 @@ def get_dados_produtos():
 ##################################################
 
 def mostra_produtos(produtos):
-    for quantidade, preco in produtos.items():
-        print(f"O produto {j} tem {quantidade} unidades e custa R${preco:.2f}\n")
-        j += 1
+    for produto in produtos:
+        print(f"Produto {produto.numero} tem {produto.quantidade} unidades e custa R${produto.preco:.2f}")
+
 
 ################################################
 ##Funcao que verifica se um arquivo esta vazio##
@@ -101,12 +101,11 @@ def salva_Arquivo(produtos, caminhoLogs):
 ##Funcao que calcula o faturamento da empresa##
 ###############################################
 
-def calcula_Faturamento():
+def calcula_Faturamento(produtos):
     vendas = []
-    produtos = leituraArquivo(caminhoLogs)
 
-    for quantidade, preco in produtos.items():
-        faturamento_produto = quantidade * preco
+    for produto in produtos:
+        faturamento_produto = produto.quantidade * produto.preco
         vendas.append(faturamento_produto)
 
     faturamento_total = sum(vendas)
@@ -114,32 +113,55 @@ def calcula_Faturamento():
     return faturamento_total
 
 
+
 ####################################################################
 ##Funcao que le o arquivo e recebe quatidade e preco em dicionario##
 ####################################################################
 
-def leituraArquivo(nome_arquivo):
-    # Inicializa um dicionário vazio para armazenar as informações
-    produtos = {}
+class Produto:
+    def __init__(self, numero, quantidade, preco):
+        self.numero = numero
+        self.quantidade = quantidade
+        self.preco = preco
 
-    # Expressão regular para corresponder à quantidade e ao preço
-    padrao = r"Quantidade: (\d+)   Valor: R\$(\d+\.\d{2})"
+def leituraArquivo(nome_arquivo):
+    produtos = []
+
+    padrao = r"Produto (\d+): Quantidade vendida: (\d+)   Valor: R\$(\d+\.\d{2})"
 
     try:
         with open(nome_arquivo, 'r') as arquivo:
             for linha in arquivo:
                 match = re.search(padrao, linha)
                 if match:
-                    quantidade = int(match.group(1))
-                    preco = float(match.group(2))
-                    produtos[quantidade] = preco
+                    numero_produto = int(match.group(1))
+                    quantidade = int(match.group(2))
+                    preco = float(match.group(3))
+                    produto = Produto(numero_produto, quantidade, preco)
+                    produtos.append(produto)
 
         return produtos
 
     except FileNotFoundError:
         print(f"Arquivo '{nome_arquivo}' não encontrado.")
-        return {}
+        return []
+    
+##############################################
+##Funcao que calcula o percentural de vendas##
+##############################################
 
+def calcula_Percentual(produtos):#repetindo a operacao para nao precisar usar dois retornos na funcao de calculo do faturamento
+    vendas = []
+    for produto in produtos:
+        faturamento_produto = produto.quantidade * produto.preco
+        vendas.append(faturamento_produto)
+        faturamento_total = sum(vendas) 
+
+    index = int(input("Qual o codigo do produto que deseja-se descobrir o faturamento? "))
+
+    resultado = (vendas[index] / faturamento_total) * 100
+
+    return resultado
 
         
 ###############################################
@@ -154,14 +176,26 @@ def menu():
         if opcao == 1:
             produtos = get_dados_produtos()
             salva_Arquivo(produtos, caminhoLogs)
+            os.system('cls')
         elif opcao == 2:
-            mostra_produtos(produtos)
+            os.system('cls')
+            y = leituraArquivo(caminhoLogs)
+            x = mostra_produtos(y)
+            print(x)
         elif opcao == 3:
             animacao()
-            x = calcula_Faturamento()
+            y = leituraArquivo(caminhoLogs)
+            x = calcula_Faturamento(y)
+            os.system('cls')
             print(f"O faturamento total e de R${x:.2f}!")
-            time.sleep(2)
+            time.sleep(1)
             
-        #elif opcao == 4:
+        elif opcao == 4:
+            y = leituraArquivo(caminhoLogs)
+            x = calcula_Percentual(y)
+            os.system('cls')
+            print(f"O valor percentual do produto escolhido e de {x:.2f}% !")
+            time.sleep(1)
+            
 
 menu()
