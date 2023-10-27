@@ -3,7 +3,7 @@
 ############################################################
 
 #ALUNOS: Pedro Henrique Santana Di Oliveira      RA:22302668
-#        Pedro Cesar
+#        Pedro Cesar Delgado Gomes
 
 ######################
 ##Caminhos e imports##
